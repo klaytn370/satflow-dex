@@ -122,9 +122,8 @@ contract SatFlowPool {
                                                                                                                             let newReserveA = k / newReserveB
                                                                                                                                     let amountAOut = reserveA - newReserveA
 
-                                                                                                                                            assert(amountAOut > 0)
-
-                                                                                                                                                    // Update reserves
+                                                                                                                                            assert(amountAOut > 
+                                                                                                                                            // Update reserves
                                                                                                                                                             reserveB = reserveB + amountBIn
                                                                                                                                                                     reserveA = reserveA - amountAOut
 
