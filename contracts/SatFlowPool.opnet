@@ -1,69 +1,134 @@
 // SatFlowPool.opnet
 // Minimal Constant Product AMM (x * y = k)
-// For OP_NET - Skeleton / MVP
+// NOTE: This is a logical implementation template to be adapted to OP_NET OP20 APIs
 
 contract SatFlowPool {
-        // Addresses of the two OP20 tokens
-            let tokenA: Address
-                let tokenB: Address
+        let tokenA: Address
+            let tokenB: Address
 
-                    // Reserves
-                        let reserveA: u128
-                            let reserveB: u128
+                let reserveA: u128
+                    let reserveB: u128
 
-                                // LP shares
-                                    let totalShares: u128
-                                        let shares: Map<Address, u128>
+                        let totalShares: u128
+                            let shares: Map<Address, u128>
 
-                                            constructor(_tokenA: Address, _tokenB: Address) {
-                                                        tokenA = _tokenA
-                                                                tokenB = _tokenB
-                                                                        reserveA = 0
-                                                                                reserveB = 0
-                                                                                        totalShares = 0
-                                                                                                shares = new Map()
+                                constructor(_tokenA: Address, _tokenB: Address) {
+                                            tokenA = _tokenA
+                                                    tokenB = _tokenB
+                                                            reserveA = 0
+                                                                    reserveB = 0
+                                                                            totalShares = 0
+                                                                                    shares = new Map()
+                                }
+
+                                    // --- Internal helpers (pseudocode placeholders) ---
+                                        function _transferFrom(token: Address, from: Address, to: Address, amount: u128) {
+                                                    // TODO: call OP20 transferFrom
+                                        }
+
+                                            function _transfer(token: Address, to: Address, amount: u128) {
+                                                        // TODO: call OP20 transfer
                                             }
 
-                                                // Add liquidity to the pool
-                                                    function addLiquidity(amountA: u128, amountB: u128) {
-                                                                // TODO:
-                                                                        // - Transfer tokenA and tokenB from user to this contract
-                                                                                // - Calculate shares to mint
-                                                                                        // - Update reserves
-                                                                                                // - Update user shares and totalShares
+                                                function _min(a: u128, b: u128): u128 {
+                                                            if (a < b) { return a } else { return b }
+                                                }
+
+                                                    function _sqrt(y: u128): u128 {
+                                                                // simple integer sqrt (placeholder)
+                                                                        let z: u128 = 0
+                                                                                let x: u128 = y
+                                                                                        while (x > 0) {
+                                                                                                        z = (x + y / x) / 2
+                                                                                                                    x = z - 1
+                                                                                        }
+                                                                                                return z
                                                     }
 
-                                                        // Remove liquidity from the pool
-                                                            function removeLiquidity(shareAmount: u128) {
-                                                                        // TODO:
-                                                                                // - Calculate amountA and amountB to return
-                                                                                        // - Burn user's shares
-                                                                                                // - Update reserves and totalShares
-                                                                                                        // - Transfer tokens back to user
+                                                        // --- Core AMM logic ---
+
+                                                            function addLiquidity(amountA: u128, amountB: u128) {
+                                                                        // Transfer tokens in
+                                                                                _transferFrom(tokenA, msg.sender, this, amountA)
+                                                                                        _transferFrom(tokenB, msg.sender, this, amountB)
+
+                                                                                                let share: u128 = 0
+
+                                                                                                        if (totalShares == 0) {
+                                                                                                                        // First LP sets initial price
+                                                                                                                                    share = _sqrt(amountA * amountB)
+                                                                                                        } else {
+                                                                                                                        let shareA = amountA * totalShares / reserveA
+                                                                                                                                    let shareB = amountB * totalShares / reserveB
+                                                                                                                                                share = _min(shareA, shareB)
+                                                                                                        }
+
+                                                                                                                // Update accounting
+                                                                                                                        shares[msg.sender] = shares[msg.sender] + share
+                                                                                                                                totalShares = totalShares + share
+
+                                                                                                                                        reserveA = reserveA + amountA
+                                                                                                                                                reserveB = reserveB + amountB
                                                             }
 
-                                                                // Swap token A for token B
+                                                                function removeLiquidity(shareAmount: u128) {
+                                                                            let userShare = shares[msg.sender]
+                                                                                    assert(userShare >= shareAmount)
+
+                                                                                            let amountA = shareAmount * reserveA / totalShares
+                                                                                                    let amountB = shareAmount * reserveB / totalShares
+
+                                                                                                            // Burn shares
+                                                                                                                    shares[msg.sender] = userShare - shareAmount
+                                                                                                                            totalShares = totalShares - shareAmount
+
+                                                                                                                                    // Update reserves
+                                                                                                                                            reserveA = reserveA - amountA
+                                                                                                                                                    reserveB = reserveB - amountB
+
+                                                                                                                                                            // Transfer tokens out
+                                                                                                                                                                    _transfer(tokenA, msg.sender, amountA)
+                                                                                                                                                                            _transfer(tokenB, msg.sender, amountB)
+                                                                }
+
                                                                     function swapAforB(amountAIn: u128) {
-                                                                                // TODO:
-                                                                                        // - Apply x*y=k formula
-                                                                                                // - Calculate amountBOut
-                                                                                                        // - Transfer tokenA in, tokenB out
-                                                                                                                // - Update reserves
+                                                                                // Transfer token A in
+                                                                                        _transferFrom(tokenA, msg.sender, this, amountAIn)
+
+                                                                                                // Constant product formula
+                                                                                                        let amountAInWithFee = amountAIn * 997 / 1000  // 0.3% fee example
+                                                                                                                let newReserveA = reserveA + amountAInWithFee
+                                                                                                                        let k = reserveA * reserveB
+                                                                                                                                let newReserveB = k / newReserveA
+                                                                                                                                        let amountBOut = reserveB - newReserveB
+
+                                                                                                                                                assert(amountBOut > 0)
+
+                                                                                                                                                        // Update reserves
+                                                                                                                                                                reserveA = reserveA + amountAIn
+                                                                                                                                                                        reserveB = reserveB - amountBOut
+
+                                                                                                                                                                                // Transfer token B out
+                                                                                                                                                                                        _transfer(tokenB, msg.sender, amountBOut)
                                                                     }
 
-                                                                        // Swap token B for token A
-                                                                            function swapBforA(amountBIn: u128) {
-                                                                                        // TODO:
-                                                                                                // - Apply x*y=k formula
-                                                                                                        // - Calculate amountAOut
-                                                                                                                // - Transfer tokenB in, tokenA out
-                                                                                                                        // - Update reserves
-                                                                            }
+                                                                        function swapBforA(amountBIn: u128) {
+                                                                                    // Transfer token B in
+                                                                                            _transferFrom(tokenB, msg.sender, this, amountBIn)
 
-                                                                                // Helper: get current price (optional)
-                                                                                    function getPriceAtoB(): u128 {
-                                                                                                // TODO:
-                                                                                                        // return reserveB / reserveA
-                                                                                                                return 0
-                                                                                    }
+                                                                                                    let amountBInWithFee = amountBIn * 997 / 1000
+                                                                                                            let newReserveB = reserveB + amountBInWithFee
+                                                                                                                    let k = reserveA * reserveB
+                                                                                                                            let newReserveA = k / newReserveB
+                                                                                                                                    let amountAOut = reserveA - newReserveA
+
+                                                                                                                                            assert(amountAOut > 0)
+
+                                                                                                                                                    // Update reserves
+                                                                                                                                                            reserveB = reserveB + amountBIn
+                                                                                                                                                                    reserveA = reserveA - amountAOut
+
+                                                                                                                                                                            // Transfer token A out
+                                                                                                                                                                                    _transfer(tokenA, msg.sender, amountAOut)
+                                                                        }
 }
