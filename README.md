@@ -40,14 +40,6 @@ Core functions:
 
 ---
 
-## ⚠️ Disclaimer
-
-This project is an **experimental prototype** for learning and demonstration purposes.
-
-**Do NOT use this code in production or with real funds.**
-
----
-
 ## 🗺️ Roadmap
 
 See [docs/roadmap.md](docs/roadmap.md) for planned improvements.
