@@ -1,0 +1,69 @@
+// SatFlowPool.opnet
+// Minimal Constant Product AMM (x * y = k)
+// For OP_NET - Skeleton / MVP
+
+contract SatFlowPool {
+        // Addresses of the two OP20 tokens
+            let tokenA: Address
+                let tokenB: Address
+
+                    // Reserves
+                        let reserveA: u128
+                            let reserveB: u128
+
+                                // LP shares
+                                    let totalShares: u128
+                                        let shares: Map<Address, u128>
+
+                                            constructor(_tokenA: Address, _tokenB: Address) {
+                                                        tokenA = _tokenA
+                                                                tokenB = _tokenB
+                                                                        reserveA = 0
+                                                                                reserveB = 0
+                                                                                        totalShares = 0
+                                                                                                shares = new Map()
+                                            }
+
+                                                // Add liquidity to the pool
+                                                    function addLiquidity(amountA: u128, amountB: u128) {
+                                                                // TODO:
+                                                                        // - Transfer tokenA and tokenB from user to this contract
+                                                                                // - Calculate shares to mint
+                                                                                        // - Update reserves
+                                                                                                // - Update user shares and totalShares
+                                                    }
+
+                                                        // Remove liquidity from the pool
+                                                            function removeLiquidity(shareAmount: u128) {
+                                                                        // TODO:
+                                                                                // - Calculate amountA and amountB to return
+                                                                                        // - Burn user's shares
+                                                                                                // - Update reserves and totalShares
+                                                                                                        // - Transfer tokens back to user
+                                                            }
+
+                                                                // Swap token A for token B
+                                                                    function swapAforB(amountAIn: u128) {
+                                                                                // TODO:
+                                                                                        // - Apply x*y=k formula
+                                                                                                // - Calculate amountBOut
+                                                                                                        // - Transfer tokenA in, tokenB out
+                                                                                                                // - Update reserves
+                                                                    }
+
+                                                                        // Swap token B for token A
+                                                                            function swapBforA(amountBIn: u128) {
+                                                                                        // TODO:
+                                                                                                // - Apply x*y=k formula
+                                                                                                        // - Calculate amountAOut
+                                                                                                                // - Transfer tokenB in, tokenA out
+                                                                                                                        // - Update reserves
+                                                                            }
+
+                                                                                // Helper: get current price (optional)
+                                                                                    function getPriceAtoB(): u128 {
+                                                                                                // TODO:
+                                                                                                        // return reserveB / reserveA
+                                                                                                                return 0
+                                                                                    }
+}
