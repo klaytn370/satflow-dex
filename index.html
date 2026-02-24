@@ -1,11 +1,181 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>SatFlow DEX</title>
-  </head>
-  <body>
-    <h1>SatFlow DEX</h1>
-    <p>Hello from Vibecode OPNet submission 🚀</p>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SatFlow DEX</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 10% 10%, #1a1446, #0b0b14 60%);
+      color: #fff;
+    }
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(6px);
+    }
+    .logo { font-weight: 700; letter-spacing: 0.5px; }
+    .btn {
+      background: linear-gradient(135deg, #ff4ecd, #7c7cff);
+      border: none; color: #fff; padding: 10px 14px; border-radius: 10px;
+      font-weight: 600; cursor: not-allowed; opacity: 0.9;
+    }
+    .container {
+      min-height: calc(100vh - 70px);
+      display: flex; justify-content: center; align-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%; max-width: 420px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      overflow: hidden;
+    }
+    .tabs {
+      display: flex; gap: 8px; padding: 12px;
+      background: rgba(0,0,0,0.2);
+    }
+    .tab {
+      flex: 1; text-align: center; padding: 10px 0;
+      border-radius: 10px; cursor: pointer; font-weight: 600;
+      color: #cfcfff;
+      background: rgba(255,255,255,0.05);
+    }
+    .tab.active {
+      background: linear-gradient(135deg, #ff4ecd, #7c7cff);
+      color: #fff;
+    }
+    .content { padding: 16px; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .swap-box {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .row { display: flex; justify-content: space-between; align-items: center; }
+    .token {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.1);
+      padding: 6px 10px; border-radius: 999px; font-weight: 600;
+    }
+    .amount {
+      width: 100%;
+      background: transparent; border: none; color: #fff;
+      font-size: 22px; outline: none;
+    }
+    .divider { text-align: center; margin: 8px 0; opacity: 0.6; }
+
+    .action {
+      width: 100%; padding: 12px; border-radius: 12px; border: none;
+      background: linear-gradient(135deg, #ff4ecd, #7c7cff);
+      color: #fff; font-weight: 700; cursor: not-allowed;
+      margin-top: 8px;
+    }
+    .muted { opacity: 0.7; font-size: 14px; }
+
+    footer {
+      text-align: center; padding: 12px; opacity: 0.6; font-size: 12px;
+    }
+    a { color: #bdbdff; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🌊 SatFlow DEX</div>
+    <button class="btn">Connect Wallet</button>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <div class="tabs">
+        <div class="tab active" data-tab="swap">Swap</div>
+        <div class="tab" data-tab="pool">Pool</div>
+        <div class="tab" data-tab="liquidity">Liquidity</div>
+      </div>
+
+      <div class="content">
+        <!-- Swap -->
+        <div class="panel active" id="swap">
+          <div class="swap-box">
+            <div class="row">
+              <span class="muted">You pay</span>
+              <div class="token">🟠 BTC</div>
+            </div>
+            <input class="amount" placeholder="0.0" />
+          </div>
+
+          <div class="divider">⇅</div>
+
+          <div class="swap-box">
+            <div class="row">
+              <span class="muted">You receive</span>
+              <div class="token">🟣 OP</div>
+            </div>
+            <input class="amount" placeholder="0.0" />
+          </div>
+
+          <button class="action">Swap (Demo)</button>
+          <p class="muted">This is a demo UI. No real transaction will happen.</p>
+        </div>
+
+        <!-- Pool -->
+        <div class="panel" id="pool">
+          <h3>Your Pools</h3>
+          <p class="muted">You don't have any liquidity positions yet.</p>
+          <button class="action">Create Pool (Demo)</button>
+        </div>
+
+        <!-- Liquidity -->
+        <div class="panel" id="liquidity">
+          <div class="swap-box">
+            <div class="row">
+              <span class="muted">Token A</span>
+              <div class="token">🟠 BTC</div>
+            </div>
+            <input class="amount" placeholder="0.0" />
+          </div>
+
+          <div class="swap-box">
+            <div class="row">
+              <span class="muted">Token B</span>
+              <div class="token">🟣 OP</div>
+            </div>
+            <input class="amount" placeholder="0.0" />
+          </div>
+
+          <button class="action">Add Liquidity (Demo)</button>
+          <p class="muted">UI only. Smart contracts are in progress.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    SatFlow DEX • Vibecode OPNet Submission • <a href="https://github.com/klaytn370/satflow-dex" target="_blank">GitHub</a>
+  </footer>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
+</body>
 </html>
